@@ -48,8 +48,8 @@ export default {
     }
   },
   created() {
-    //fetch database from
-    db.collection("todos")
+    //fetch database from firebase
+    /*db.collection("todos")
       .get()
       .then(snapshot => {
         snapshot.forEach(doc => {
@@ -57,7 +57,24 @@ export default {
           todo.id = doc.id;
           this.todos.push(todo);
         });
+      });*/
+    //realtime listener
+    db.collection("todos").onSnapshot(res => {
+      const changes = res.docChanges();
+
+      changes.forEach(change => {
+        if (change.type === "added") {
+          this.todos.push({
+            ...change.doc.data(),
+            id: change.doc.id
+          });
+        } //else if (change.type == "removed") {
+        //this.doc.delete({
+        //  ...change.doc.data()
+        //});
+        //}
       });
+    });
   }
 };
 </script>
